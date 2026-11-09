@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ead8bd">
+  <title>Smart Foot Bath Simulator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div>
+        <h1>Smart Foot Bath Simulator</h1>
+        <p>A functional model of a real appliance, built from buttons, sensors, and safety rules.</p>
+      </div>
+    </header>
+
+    <div class="layout">
+      <div class="left">
+        <section class="card appliance" id="appliance" aria-label="Appliance simulation">
+          <div class="card-head"><h2>The foot bath</h2><span class="card-sub">Live appliance view</span></div>
+          <p class="bath-note">When heating stops, the water cools toward 22°C. With no water, the temperature display reads “No water.”</p>
+          <div class="bath-speed"><label><input id="fastMode" type="checkbox"> Fast mode</label><small id="clockHint">Normal: bath timer shows min:sec</small></div>
+          <div class="scene">
+            <div class="bath" id="bath">
+              <div class="heater-glow"></div>
+              <div class="bath-body"></div>
+              <div class="water" id="water" aria-label="Water basin with two massage rollers">
+                <div class="footbed left"></div><div class="footbed right"></div>
+                <div class="roller left"></div><div class="roller right"></div>
+              </div>
+              <div class="steam one"></div><div class="steam two"></div><div class="steam three"></div>
+              <div class="bezel"><small>Time remaining</small><span class="digital" id="bezelTimer">30:00</span></div>
+              <div class="speed" aria-hidden="true"><i></i><i></i><i></i></div>
+            </div>
+            <div class="safety-overlay" role="alert"><span id="faultMessage">⚠ SAFETY SHUTDOWN</span></div>
+          </div>
+          <div class="readouts">
+            <div class="readout"><small>Current temp</small><strong id="liveTempValue">35°C</strong></div>
+            <div class="readout"><small>Water</small><strong id="waterStatus">Detected</strong></div>
+            <div class="readout"><small>Heater</small><strong id="heaterStatus">OFF</strong></div>
+            <div class="readout"><small>Rollers</small><strong id="massageStatus">OFF</strong></div>
+          </div>
+          <p class="temperature-warning" id="temperatureWarning" role="status" aria-live="polite" hidden></p>
+        </section>
+
+        <section class="card control-panel" aria-labelledby="control-heading">
+          <div class="card-head"><h2 id="control-heading">Physical control panel</h2><span class="card-sub">Your settings</span></div>
+          <div class="control-content">
+            <div class="power-row">
+              <button class="major-button power" id="powerButton" type="button">⏻ <span>Power on</span></button>
+              <button class="major-button" id="pauseButton" type="button">Ⅱ <span>Pause</span></button>
+            </div>
+            <div class="settings">
+              <div class="setting">
+                <div class="setting-label">Target temp</div>
+                <div class="setting-controls">
+                  <button class="step-button" id="tempDown" type="button" aria-label="Decrease target temperature">−</button>
+                  <div class="setting-value"><span id="targetValue">40</span><span>°C</span></div>
+                  <button class="step-button" id="tempUp" type="button" aria-label="Increase target temperature">+</button>
+                </div>
+              </div>
+              <div class="setting">
+                <div class="setting-label">Set timer</div>
+                <div class="setting-controls">
+                  <button class="step-button" id="timeDown" type="button" aria-label="Decrease timer duration by one minute">−</button>
+                  <div class="setting-value"><span id="timerValue">30</span><span>min</span></div>
+                  <button class="step-button" id="timeUp" type="button" aria-label="Increase timer duration by one minute">+</button>
+                </div>
+              </div>
+            </div>
+            <span class="mode-label">Massage rollers</span>
+            <div class="mode-group" role="group" aria-label="Massage intensity">
+              <button class="mode-button" type="button" data-mode="Gentle" aria-pressed="true">Gentle</button>
+              <button class="mode-button" type="button" data-mode="Strong" aria-pressed="false">Strong</button>
+              <button class="mode-button" type="button" data-mode="Off" aria-pressed="false">Off</button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="right">
+        <section class="card inspector" aria-labelledby="inspector-heading">
+          <div class="card-head"><h2 id="inspector-heading">State machine inspector</h2><span class="card-sub">Live trace</span></div>
+          <div class="inspector-content">
+            <div class="state-line"><span>Active state</span><strong class="state-badge off" id="stateValue" aria-live="polite">OFF</strong></div>
+            <div class="inspector-grid">
+              <div><small>Target</small><strong id="inspectorTarget">40°C</strong></div>
+              <div><small>Remaining</small><strong id="inspectorTimer">30:00</strong></div>
+              <div><small>Mode</small><strong id="inspectorMode">Gentle</strong></div>
+            </div>
+            <div class="log-head"><h3>Event console</h3><div class="log-actions"><button id="copyLog" type="button">Copy transcript</button><button id="clearLog" type="button">Clear log</button></div></div>
+            <div class="log-legend" aria-label="Event log color key"><span class="user">Power / Pause</span><span class="massage">Massage</span><span class="timer">Timer auto-off</span><span class="system">Heater</span><span class="safety">Safety</span></div>
+            <div class="log" id="eventLog" role="log" aria-live="polite" aria-relevant="additions"></div>
+            <p class="note">SET TIMER is the planned session length. The bath display counts down while RUNNING: min:sec normally, minutes only in Fast mode. Safety interrupts RUNNING or PAUSED.</p>
+          </div>
+        </section>
+        <section class="card test-panel" aria-labelledby="sensor-heading">
+          <div class="card-head"><h2 id="sensor-heading">Test conditions</h2><span class="card-sub">Simulation only</span></div>
+          <div class="sensor-content">
+            <p class="sensor-explain">Test extreme and boundary conditions. Each choice starts a fresh simulation, not a foot bath control.</p>
+            <div class="preset-section">
+              <div class="preset-head"><h3 class="preset-label">Quick test scenarios</h3><button class="cancel-test" id="cancelTest" type="button" disabled>Cancel test</button></div>
+              <div class="preset-row" role="group" aria-label="Quick test scenarios">
+                <button class="preset-button" type="button" data-sensor="boundary" aria-pressed="false">Boundary 48°C</button>
+                <button class="preset-button" type="button" data-sensor="overheat" aria-pressed="false">Overheat 49°C</button>
+                <button class="preset-button" type="button" data-sensor="dry" aria-pressed="false">Dry tub</button>
+              </div>
+            </div>
+            <p class="test-feedback" id="testFeedback" role="status" aria-live="polite">Choose a scenario to test the appliance.</p>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
