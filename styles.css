@@ -189,6 +189,11 @@
     .bath-speed small { color:#806e60; font-size:.72rem; line-height:1.35; text-align:right; }
     .log-actions { display:flex; gap:7px; }
     @media (max-width:900px) { .layout { grid-template-columns:1fr; grid-template-areas:"bath" "controls" "inspector" "tests"; } }
-    @media (max-width:620px) { .scene { height:285px; } .bath { width:540px; max-width:none; transform:scale(.68); } .bath-speed { align-items:flex-start; flex-direction:column; gap:5px; } .bath-speed small { text-align:left; } .readouts { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-    @media (max-width:430px) { .bath { transform:scale(.56); } }
+    /* Give the scene a track that can shrink below the bath's unscaled width.
+       The bath stays centered while its visual size changes on narrow screens. */
+    @media (max-width:620px) { .scene { height:285px; grid-template-columns:minmax(0,1fr); } .bath { width:540px; max-width:none; justify-self:center; transform:scale(.68); } .bath-speed { align-items:flex-start; flex-direction:column; gap:5px; } .bath-speed small { text-align:left; } .readouts { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media (max-width:500px) { .bath { transform:scale(.60); } }
+    @media (max-width:430px) { .bath { transform:scale(.54); } }
+    @media (max-width:390px) { .bath { transform:scale(.50); } }
+    @media (max-width:360px) { .bath { transform:scale(.43); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; } }
